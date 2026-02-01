@@ -1,4 +1,15 @@
-import { useState } from "react";
+import { useState } from 'react';
+
+import { 
+  Save ,
+  X
+} from 'lucide-react';
+import api from '../../api/api'
+
+const formatDate = (date) => {
+  const d = new Date(date);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
 
 // FULL EDIT MODAL - Edit ALL fields
 export function EditSaleModal({ sale, onClose, onSave, varieties }) {
