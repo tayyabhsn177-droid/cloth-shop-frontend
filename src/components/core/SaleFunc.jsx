@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 // FULL EDIT MODAL - Edit ALL fields
 export function EditSaleModal({ sale, onClose, onSave, varieties }) {
   const [formData, setFormData] = useState({
