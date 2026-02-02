@@ -1,4 +1,4 @@
-// frontend/src/pages/Sales.jsx - GLASSMORPHISM REDESIGN (FIXED)
+// frontend/src/pages/Sales.jsx - GLASSMORPHISM WITH SWIPEABLE METRICS
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -23,6 +23,7 @@ import SalesForm from '../components/SaleForm';
 import api from '../api/api';
 import { EditSaleModal } from '../components/core/SaleFunc';
 import { SkeletonStatCard, SkeletonMobileCard, SkeletonTableRow } from '../components/skeleton/UnifiedSkeleton';
+import SwipeableMetricCards from '../components/SwipeableMetricCards';
 
 const formatDate = (date) => {
   const d = new Date(date);
@@ -32,57 +33,6 @@ const formatDate = (date) => {
 const getItemCount = (quantity, unit) => {
   if (unit === 'meters' || unit === 'yards') return 1;
   return parseFloat(quantity);
-};
-
-// ============================================
-// GLASSMORPHISM STAT CARD
-// ============================================
-const GlassStatCard = ({ icon: Icon, label, value, subtitle, color, index }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="group relative"
-    >
-      {/* Glow effect on hover */}
-      <div className={`absolute inset-0 bg-linear-to-br ${color} opacity-0 group-hover:opacity-20 dark:group-hover:opacity-30 blur-xl transition-opacity duration-500 rounded-2xl`} />
-      
-      {/* Glass card */}
-      <div className="relative backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/50 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300">
-        <div className="flex items-start justify-between">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-              {label}
-            </p>
-            <motion.p 
-              className="text-3xl lg:text-4xl font-bold bg-linear-to-br from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent"
-              initial={{ scale: 0.5 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: index * 0.1 + 0.2, type: "spring", stiffness: 200 }}
-            >
-              {value}
-            </motion.p>
-            {subtitle && (
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                {subtitle}
-              </p>
-            )}
-          </div>
-          
-          {/* Icon with gradient background */}
-          <motion.div 
-            className={`p-3 rounded-xl bg-linear-to-br ${color} shadow-lg`}
-            whileHover={{ rotate: 5, scale: 1.1 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
-            <Icon className="w-6 h-6 lg:w-7 lg:h-7 text-white" />
-          </motion.div>
-        </div>
-      </div>
-    </motion.div>
-  );
 };
 
 // ============================================
@@ -97,7 +47,7 @@ const FilterChip = ({ active, label, count, icon: Icon, onClick }) => {
       className={`
         relative px-4 py-2 rounded-xl font-medium text-sm transition-all duration-300
         ${active 
-          ? 'bg-linear-to-r from-gray-700 to-gray-800 dark:from-gray-600 dark:to-gray-700 text-white shadow-lg' 
+          ? 'bg-gradient-to-r from-gray-700 to-gray-800 dark:from-gray-600 dark:to-gray-700 text-white shadow-lg' 
           : 'backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-white/90 dark:hover:bg-gray-800/90'
         }
       `}
@@ -141,7 +91,7 @@ const SalesTableRow = ({ item, index, onEdit, onDelete, formatQuantityWithUnit }
     >
       <td className="px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-linear-to-br from-blue-500 to-cyan-500">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500">
             <User size={16} className="text-white" />
           </div>
           <div>
@@ -456,8 +406,39 @@ export default function EnhancedSalesWithPriceSelector() {
     return sum + getItemCount(item.quantity, item.variety.measurement_unit);
   }, 0);
 
+  // ============================================
+  // PREPARE METRICS FOR SWIPEABLE CARDS
+  // ============================================
+  const metrics = [
+    {
+      icon: Package,
+      label: "Items Sold",
+      value: totalItemsSold,
+      subtitle: `${filteredSales.length} transaction${filteredSales.length !== 1 ? 's' : ''}`,
+      color: "from-blue-500 to-cyan-500"
+    },
+    {
+      icon: DollarSign,
+      label: "Total Sales",
+      value: `₹${totalSales.toFixed(2)}`,
+      subtitle: new Date(selectedDate).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      color: "from-purple-500 to-pink-500"
+    },
+    {
+      icon: TrendingUp,
+      label: "Total Profit",
+      value: `₹${totalProfit.toFixed(2)}`,
+      subtitle: `Margin: ${totalSales > 0 ? ((totalProfit/totalSales)*100).toFixed(1) : 0}%`,
+      color: "from-emerald-500 to-teal-500"
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-50 via-cyan-50/30 to-blue-50/30 dark:from-gray-900 dark:via-cyan-900/10 dark:to-blue-900/10">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-cyan-50/30 to-blue-50/30 dark:from-gray-900 dark:via-cyan-900/10 dark:to-blue-900/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 
         {/* HEADER SECTION */}
@@ -468,7 +449,7 @@ export default function EnhancedSalesWithPriceSelector() {
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-linear-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent mb-2">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent mb-2">
                 Sales Management
               </h1>
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
@@ -496,7 +477,7 @@ export default function EnhancedSalesWithPriceSelector() {
                 whileHover={{ scale: 1.05, boxShadow: "0 10px 40px rgba(0,0,0,0.2)" }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowForm(!showForm)}
-                className="w-full sm:w-auto flex items-center justify-center bg-linear-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white px-6 py-3 rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all"
+                className="w-full sm:w-auto flex items-center justify-center bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white px-6 py-3 rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all"
               >
                 <Plus size={18} className="mr-2" />
                 <span>Record Sale</span>
@@ -558,39 +539,21 @@ export default function EnhancedSalesWithPriceSelector() {
           />
         )}
 
-        {/* SUMMARY STATS */}
+        {/* ============================================ */}
+        {/* SWIPEABLE METRIC CARDS - INSTAGRAM STYLE */}
+        {/* ============================================ */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
-            <SkeletonStatCard />
-            <SkeletonStatCard />
+          <div className="mb-8">
             <SkeletonStatCard />
           </div>
         ) : !loading && filteredSales.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
-            <GlassStatCard
-              icon={Package}
-              label="Items Sold"
-              value={totalItemsSold}
-              color="from-blue-500 to-cyan-500"
-              index={0}
-            />
-            <GlassStatCard
-              icon={DollarSign}
-              label="Total Sales"
-              value={`₹${totalSales.toFixed(2)}`}
-              color="from-purple-500 to-pink-500"
-              index={1}
-            />
-            <GlassStatCard
-              icon={TrendingUp}
-              label="Total Profit"
-              value={`₹${totalProfit.toFixed(2)}`}
-              subtitle={new Date(selectedDate).toLocaleDateString('en-US', { 
-                month: 'short', 
-                day: 'numeric' 
-              })}
-              color="from-emerald-500 to-teal-500"
-              index={2}
+          <div className="mb-8">
+            <SwipeableMetricCards 
+              metrics={metrics}
+              showNavButtons={true}
+              showDots={true}
+              autoCountUp={true}
+              swipeThreshold={50}
             />
           </div>
         )}
@@ -610,7 +573,7 @@ export default function EnhancedSalesWithPriceSelector() {
               className="w-full backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/50 rounded-xl px-6 py-4 shadow-lg hover:shadow-xl transition-all flex items-center justify-between group"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-linear-to-br from-gray-600 to-gray-800 group-hover:from-gray-700 group-hover:to-gray-900 transition-all">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-gray-600 to-gray-800 group-hover:from-gray-700 group-hover:to-gray-900 transition-all">
                   <Eye size={20} className="text-white" />
                 </div>
                 <div className="text-left">
@@ -646,7 +609,7 @@ export default function EnhancedSalesWithPriceSelector() {
               transition={{ duration: 0.5, ease: "easeInOut" }}
               className="backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/50 rounded-2xl shadow-2xl overflow-hidden"
             >
-              <div className="px-6 py-5 border-b border-gray-200/50 dark:border-gray-700/50 bg-linear-to-r from-gray-100/50 to-transparent dark:from-gray-700/50">
+              <div className="px-6 py-5 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-gray-100/50 to-transparent dark:from-gray-700/50">
                 <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                   {filterMode === 'cost_unknown' ? 'Sales Needing Cost Update' : 'Sales Records'}
                 </h3>
@@ -696,7 +659,7 @@ export default function EnhancedSalesWithPriceSelector() {
                   animate={{ opacity: 1 }}
                   className="flex flex-col items-center justify-center py-16"
                 >
-                  <div className="w-20 h-20 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mb-4">
+                  <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mb-4">
                     <Package className="text-gray-400 dark:text-gray-500 w-10 h-10" />
                   </div>
                   <p className="text-base text-gray-600 dark:text-gray-400 font-semibold">
@@ -764,7 +727,7 @@ export default function EnhancedSalesWithPriceSelector() {
             animate={{ opacity: 1, scale: 1 }}
             className="backdrop-blur-xl bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/50 rounded-2xl shadow-xl p-12 text-center"
           >
-            <div className="w-24 h-24 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-24 h-24 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingBag className="text-gray-400 dark:text-gray-500 w-12 h-12" />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -777,7 +740,7 @@ export default function EnhancedSalesWithPriceSelector() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 bg-linear-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-600 dark:to-gray-800 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
             >
               <Plus size={18} />
               Record Your First Sale
