@@ -253,7 +253,7 @@ const MetricCard = ({ metric, isActive, autoCountUp, index }) => {
       className="group relative mx-auto max-w-md sm:max-w-lg lg:max-w-xl"
     >
       {/* Glow effect on hover - using existing colors */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-20 dark:group-hover:opacity-30 blur-2xl transition-opacity duration-500 rounded-3xl`} />
+      <div className={`absolute inset-0 bg-linear-to-br ${color} opacity-0 group-hover:opacity-20 dark:group-hover:opacity-30 blur-2xl transition-opacity duration-500 rounded-3xl`} />
       
       {/* Main Card */}
       <div className="relative backdrop-blur-xl bg-white/80 dark:bg-gray-800/80 border border-white/30 dark:border-gray-700/50 rounded-3xl p-8 sm:p-10 lg:p-12 shadow-2xl hover:shadow-3xl transition-all duration-300">
@@ -279,7 +279,7 @@ const MetricCard = ({ metric, isActive, autoCountUp, index }) => {
                 stiffness: 200,
                 damping: 15
               }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-br from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-linear-to-br from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent leading-tight"
             >
               {formattedValue}
             </motion.p>
@@ -311,7 +311,7 @@ const MetricCard = ({ metric, isActive, autoCountUp, index }) => {
               scale: 1.1,
               transition: { type: "spring", stiffness: 400 }
             }}
-            className={`p-4 sm:p-5 lg:p-6 rounded-2xl bg-gradient-to-br ${color} shadow-xl shrink-0 ml-4`}
+            className={`p-4 sm:p-5 lg:p-6 rounded-2xl bg-linear-to-br ${color} shadow-xl shrink-0 ml-4`}
           >
             <Icon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white" />
           </motion.div>
@@ -322,7 +322,7 @@ const MetricCard = ({ metric, isActive, autoCountUp, index }) => {
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
-          className={`h-1.5 rounded-full bg-gradient-to-r ${color} mt-6 origin-left`}
+          className={`h-1.5 rounded-full bg-linear-to-r ${color} mt-6 origin-left`}
         />
       </div>
 
